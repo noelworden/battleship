@@ -16,6 +16,7 @@ defmodule BattleshipWeb.ChannelCase do
   """
 
   use ExUnit.CaseTemplate
+  alias Ecto.Adapters.SQL.Sandbox
 
   using do
     quote do
@@ -29,10 +30,10 @@ defmodule BattleshipWeb.ChannelCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Battleship.Repo)
+    :ok = Sandbox.checkout(Battleship.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Battleship.Repo, {:shared, self()})
+      Sandbox.mode(Battleship.Repo, {:shared, self()})
     end
 
     :ok
