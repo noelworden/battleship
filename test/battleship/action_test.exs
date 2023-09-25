@@ -11,10 +11,7 @@ defmodule Battleship.ActionTest do
     test "can be placed on the grid" do
       message = "Placed Cruiser\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Cruiser", "right", "C5"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Cruiser", "right", "C5"]) end)
 
       assert output == message
     end
@@ -42,10 +39,7 @@ defmodule Battleship.ActionTest do
 
       message = "That ship has already been placed\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Cruiser", "right", "C5"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Cruiser", "right", "C5"]) end)
 
       assert output == message
     end
@@ -55,10 +49,7 @@ defmodule Battleship.ActionTest do
 
       message = "A1 is already occupied\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Submarine", "down", "A1"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Submarine", "down", "A1"]) end)
 
       assert output == message
     end
@@ -66,10 +57,7 @@ defmodule Battleship.ActionTest do
     test "cannot be placed off the grid" do
       message = "Ship placement failed, A12 is outside the grid\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Submarine", "down", "A12"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Submarine", "down", "A12"]) end)
 
       assert output == message
     end
@@ -77,10 +65,7 @@ defmodule Battleship.ActionTest do
     test "cannot be placed if its a non-existent ship" do
       message = "Not a proper ship\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Sailboat", "down", "A1"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Sailboat", "down", "A1"]) end)
 
       assert output == message
     end
@@ -88,10 +73,7 @@ defmodule Battleship.ActionTest do
     test "cannot be placed if its the wrong direction" do
       message = "Not a proper direction\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Cruiser", "up", "A1"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Cruiser", "up", "A1"]) end)
 
       assert output == message
     end
@@ -100,10 +82,7 @@ defmodule Battleship.ActionTest do
       message =
         "Invalid placement. Use --placeship=\"Ship direction coordinates\" to place a ship\n"
 
-      output =
-        capture_io(fn ->
-          Action.place_ship(["Cruiser", "up"])
-        end)
+      output = capture_io(fn -> Action.place_ship(["Cruiser", "up"]) end)
 
       assert output == message
     end
@@ -115,10 +94,7 @@ defmodule Battleship.ActionTest do
 
       message = "Hit\n"
 
-      output =
-        capture_io(fn ->
-          Action.shot("A1")
-        end)
+      output = capture_io(fn -> Action.shot("A1") end)
 
       assert output == message
     end
@@ -126,10 +102,7 @@ defmodule Battleship.ActionTest do
     test "misses" do
       message = "Miss\n"
 
-      output =
-        capture_io(fn ->
-          Action.shot("A1")
-        end)
+      output = capture_io(fn -> Action.shot("A1") end)
 
       assert output == message
     end
@@ -141,10 +114,7 @@ defmodule Battleship.ActionTest do
 
       message = "Hit\nYou sunk my Destroyer!\n"
 
-      output =
-        capture_io(fn ->
-          Action.shot("C1")
-        end)
+      output = capture_io(fn -> Action.shot("C1") end)
 
       assert output == message
     end
@@ -159,12 +129,66 @@ defmodule Battleship.ActionTest do
 
       message = "Hit\nYou sunk my Destroyer!\nGame Over\n"
 
-      output =
-        capture_io(fn ->
-          Action.shot("C1")
-        end)
+      output = capture_io(fn -> Action.shot("C1") end)
 
       assert output == message
+    end
+  end
+
+  describe "an entire game session" do
+    test "is successful" do
+      successful_placement_message = "Placed "
+
+      assert capture_io(fn -> Action.place_ship(["Cruiser", "down", "A1"]) end) ==
+               successful_placement_message <> "Cruiser\n"
+
+      assert capture_io(fn -> Action.place_ship(["Battleship", "down", "C3"]) end) ==
+               successful_placement_message <> "Battleship\n"
+
+      assert capture_io(fn -> Action.place_ship(["Carrier", "right", "H6"]) end) ==
+               successful_placement_message <> "Carrier\n"
+
+      assert capture_io(fn -> Action.place_ship(["Submarine", "down", "B8"]) end) ==
+               successful_placement_message <> "Submarine\n"
+
+      assert capture_io(fn -> Action.place_ship(["Destroyer", "right", "J2"]) end) ==
+               successful_placement_message <> "Destroyer\n"
+
+      assert capture_io(fn -> Action.shot("A1") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("C1") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("B1") end) == "Hit\nYou sunk my Cruiser!\n"
+
+      assert capture_io(fn -> Action.shot("A3") end) == "Miss\n"
+
+      assert capture_io(fn -> Action.shot("J2") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("J3") end) == "Hit\nYou sunk my Destroyer!\n"
+
+      assert capture_io(fn -> Action.shot("C3") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("D3") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("E3") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("F3") end) == "Hit\nYou sunk my Battleship!\n"
+
+      assert capture_io(fn -> Action.shot("H6") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("H7") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("H8") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("H9") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("H10") end) == "Hit\nYou sunk my Carrier!\n"
+
+      assert capture_io(fn -> Action.shot("B8") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("C8") end) == "Hit\n"
+
+      assert capture_io(fn -> Action.shot("D8") end) == "Hit\nYou sunk my Submarine!\nGame Over\n"
     end
   end
 end
