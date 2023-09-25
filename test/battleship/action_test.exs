@@ -60,8 +60,6 @@ defmodule Battleship.ActionTest do
           Action.place_ship(["Submarine", "down", "A1"])
         end)
 
-      require IEx
-      IEx.pry()
       assert output == message
     end
 
