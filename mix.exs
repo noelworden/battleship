@@ -10,7 +10,8 @@ defmodule Battleship.MixProject do
       compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      escript: [main_module: CLI]
     ]
   end
 
